@@ -12,6 +12,7 @@ import { BaileysStore } from "./BaileysStore";
 import { pinoLogger } from "../../shared/utils/BaileysLogger";
 import { LevelDB } from "../Storage";
 import { isDev } from "../../shared/utils/isDev";
+import { MessageProcessor } from "./MessageProcessor";
 
 @injectable()
 export class WhatsappClient {
@@ -26,6 +27,7 @@ export class WhatsappClient {
     @inject(Logger) private logger: Logger,
     @inject(BaileysStore) private baileysStore: BaileysStore,
     @inject(LevelDB) private db: LevelDB,
+    @inject(MessageProcessor) private messageProcessor: MessageProcessor,
   ) {}
 
   public async initialize() {
@@ -56,6 +58,8 @@ export class WhatsappClient {
           }
         },
       });
+
+      this.messageProcessor.initializeQueue(this.socket);
 
       this.baileysStore.bind(this.socket.ev);
 
@@ -157,26 +161,8 @@ export class WhatsappClient {
   }: {
     messages: WAMessage[];
   }) {
-    for (const msg of messages) {
-      if (msg.key.fromMe || !msg.message) continue;
-
-      const remoteJid = msg.key.remoteJid as string;
-      const messageContent =
-        msg.message.conversation || msg.message.extendedTextMessage?.text || "";
-
-      try {
-        if (messageContent.startsWith("/")) {
-          await this.commandHandler.executeCommand(
-            messageContent.trim(),
-            this.socket!,
-            remoteJid,
-          );
-        } else {
-          await this.eventHandler.handleEvent("message", this.socket!, msg);
-        }
-      } catch (error) {
-        this.logger.error(`Erro ao processar mensagem: ${error}`);
-      }
+    if (this.socket) {
+      await this.messageProcessor.processMessages(this.socket, messages);
     }
   }
 }
