@@ -1,4 +1,4 @@
-import { Logger } from "./Logger";
+import { Logger } from "@infrastructure/Logger.js";
 import { Level } from "level";
 import { inject, injectable } from "tsyringe";
 

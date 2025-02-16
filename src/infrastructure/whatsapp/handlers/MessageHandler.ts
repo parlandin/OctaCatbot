@@ -1,9 +1,8 @@
-// MessageHandler.ts
 import { inject, injectable } from "tsyringe";
 import { WASocket, WAMessage } from "@whiskeysockets/baileys";
-import { CommandHandler } from "./CommandHandler";
-import { EventHandler } from "./EventHandler";
-import { Logger } from "../../Logger";
+import { CommandHandler } from "@infrastructure/whatsapp/handlers/CommandHandler.js";
+import { EventHandler } from "@infrastructure/whatsapp/handlers/EventHandler.js";
+import { Logger } from "@infrastructure/Logger.js";
 
 @injectable()
 export class MessageHandler {

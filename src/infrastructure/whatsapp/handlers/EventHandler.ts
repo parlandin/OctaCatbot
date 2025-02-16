@@ -2,7 +2,7 @@ import { inject, injectable } from "tsyringe";
 import * as fs from "fs";
 import * as path from "path";
 import { WAMessage, WASocket } from "@whiskeysockets/baileys";
-import { Logger } from "../../Logger";
+import { Logger } from "@infrastructure/Logger.js";
 
 interface Event {
   event: string;

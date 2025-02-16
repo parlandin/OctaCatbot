@@ -5,8 +5,8 @@ import {
 } from "@whiskeysockets/baileys";
 import sharp from "sharp";
 import { container } from "tsyringe";
-import { Logger } from "../../infrastructure/Logger";
-import { isDev } from "../../shared/utils/isDev";
+import { Logger } from "@infrastructure/Logger.js";
+import { isDev } from "@utils/isDev.js";
 
 export const event = "message";
 

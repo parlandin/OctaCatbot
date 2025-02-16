@@ -5,12 +5,12 @@ import makeWASocket, {
   WAMessage,
   proto,
 } from "@whiskeysockets/baileys";
-import { Logger } from "../Logger";
-import { BaileysStore } from "./BaileysStore";
-import { pinoLogger } from "../../shared/utils/BaileysLogger";
-import { LevelDB } from "../Storage";
-import { isDev } from "../../shared/utils/isDev";
-import { MessageProcessor } from "./MessageProcessor";
+import { Logger } from "@infrastructure/Logger.js";
+import { BaileysStore } from "@infrastructure/whatsapp/BaileysStore.js";
+import { pinoLogger } from "@utils/BaileysLogger.js";
+import { LevelDB } from "@infrastructure/Storage.js";
+import { isDev } from "@utils/isDev.js";
+import { MessageProcessor } from "@infrastructure/whatsapp/MessageProcessor.js";
 
 @injectable()
 export class WhatsappClient {

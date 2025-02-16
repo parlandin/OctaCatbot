@@ -1,5 +1,5 @@
-import { Logger } from "../Logger";
-import { LevelDB } from "../Storage";
+import { Logger } from "@infrastructure/Logger.js";
+import { LevelDB } from "@infrastructure/Storage.js";
 import {
   BaileysEventEmitter,
   Chat,

@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import "./shared/Container";
+import "@shared/Container.js";
 import { container } from "tsyringe";
-import { WhatsappClient } from "./infrastructure/whatsapp/Client";
-import { Logger } from "./infrastructure/Logger";
+import { WhatsappClient } from "@infrastructure/whatsapp/Client.js";
+import { Logger } from "@infrastructure/Logger.js";
 
 const bootstrap = async () => {
   const logger = container.resolve(Logger);

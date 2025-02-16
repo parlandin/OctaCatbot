@@ -1,9 +1,9 @@
 import { inject, injectable } from "tsyringe";
 import PQueue from "p-queue";
 import { WASocket, WAMessage } from "@whiskeysockets/baileys";
-import { Logger } from "../Logger";
-import { LevelDB } from "../Storage";
-import { MessageHandler } from "./handlers/MessageHandler";
+import { Logger } from "@infrastructure/Logger.js";
+import { LevelDB } from "@infrastructure/Storage.js";
+import { MessageHandler } from "@infrastructure/whatsapp/handlers/MessageHandler.js";
 
 interface QueuedMessage {
   id: string;
