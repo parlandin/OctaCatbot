@@ -41,6 +41,7 @@ export class BaileysStore {
   private async handleMessagesUpsert({ messages }: { messages: WAMessage[] }) {
     for (const msg of messages) {
       const key = msg.key;
+
       await this.db.setData("messages", `${key.remoteJid}:${key.id}`, msg);
     }
   }

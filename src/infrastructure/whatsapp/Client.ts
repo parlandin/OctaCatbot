@@ -3,22 +3,29 @@ import makeWASocket, {
   useMultiFileAuthState,
   WASocket,
   WAMessage,
+  proto,
 } from "@whiskeysockets/baileys";
 import { CommandHandler } from "./handlers/CommandHandler";
 import { EventHandler } from "./handlers/EventHandler";
 import { Logger } from "../Logger";
 import { BaileysStore } from "./BaileysStore";
 import { pinoLogger } from "../../shared/utils/BaileysLogger";
+import { LevelDB } from "../Storage";
+import { isDev } from "src/shared/utils/isDev";
 
 @injectable()
 export class WhatsappClient {
   private socket?: WASocket;
+  private reconnectAttempts: number = 0;
+  private readonly MAX_RECONNECT_ATTEMPTS = 5;
+  private cleanupInterval?: NodeJS.Timeout;
 
   constructor(
     @inject(CommandHandler) private commandHandler: CommandHandler,
     @inject(EventHandler) private eventHandler: EventHandler,
     @inject(Logger) private logger: Logger,
     @inject(BaileysStore) private baileysStore: BaileysStore,
+    @inject(LevelDB) private db: LevelDB,
   ) {}
 
   public async initialize() {
@@ -29,20 +36,73 @@ export class WhatsappClient {
       this.socket = makeWASocket({
         auth: state,
         printQRInTerminal: true,
-        browser: ["Baileys", "Chrome", "1.0"],
+        browser: [`${isDev ? "Pop-os" : "discloud"}`, "Chrome", "1.0"],
+
         syncFullHistory: false,
-        markOnlineOnConnect: true,
+        markOnlineOnConnect: false,
         generateHighQualityLinkPreview: false,
         logger: pinoLogger,
+        getMessage: async (key): Promise<proto.IMessage | undefined> => {
+          try {
+            const message = await this.db.getData<proto.IMessage>(
+              "messages",
+              `${key.remoteJid}:${key.id}`,
+            );
+
+            console.log("getMessage", message);
+            return message ?? undefined;
+          } catch {
+            return undefined;
+          }
+        },
       });
 
       this.baileysStore.bind(this.socket.ev);
 
       this.registerEventListeners();
+
       this.socket.ev.on("creds.update", saveCreds);
+
+      this.startPeriodicCleanup();
+
+      this.reconnectAttempts = 0;
     } catch (error) {
       this.logger.error("Erro ao inicializar o WhatsApp: ", error);
+      throw error;
     }
+  }
+
+  private startPeriodicCleanup() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+
+    this.cleanupInterval = setInterval(
+      async () => {
+        try {
+          const cutoffDate = Date.now() - 7 * 24 * 60 * 60 * 1000; // 7 dias
+          const keys = await this.db.listKeys("messages");
+
+          for (const key of keys) {
+            const msg = await this.db.getData<proto.IWebMessageInfo>(
+              "messages",
+              key,
+            );
+            if (
+              msg?.messageTimestamp &&
+              Number(msg.messageTimestamp) < cutoffDate
+            ) {
+              await this.db.delete("messages", key);
+            }
+          }
+
+          this.logger.info("Limpeza periódica concluída");
+        } catch (error) {
+          this.logger.error("Erro na limpeza periódica: ", error);
+        }
+      },
+      24 * 60 * 60 * 1000,
+    );
   }
 
   private registerEventListeners() {
@@ -52,13 +112,14 @@ export class WhatsappClient {
       "connection.update",
       this.handleConnectionUpdate.bind(this),
     );
+
     this.socket.ev.on(
       "messages.upsert",
       this.handleIncomingMessages.bind(this),
     );
   }
 
-  private handleConnectionUpdate(update: {
+  private async handleConnectionUpdate(update: {
     connection?: string;
     lastDisconnect?: { error?: Error };
   }) {
@@ -69,14 +130,25 @@ export class WhatsappClient {
         lastDisconnect?.error?.message || "Erro desconhecido";
       this.logger.warn(`Conexão perdida: ${errorMessage}`);
 
-      if (!errorMessage.includes("logged out")) {
-        this.logger.warn("Tentando reconectar...");
-        this.initialize();
+      if (
+        !errorMessage.includes("logged out") &&
+        this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS
+      ) {
+        this.reconnectAttempts++;
+        this.logger.warn(
+          `Tentando reconectar (tentativa ${this.reconnectAttempts})...`,
+        );
+        await this.initialize();
       } else {
         this.logger.error("Desconectado permanentemente.");
+
+        if (this.cleanupInterval) {
+          clearInterval(this.cleanupInterval);
+        }
       }
     } else if (connection === "open") {
       this.logger.success("Conectado ao WhatsApp!");
+      this.reconnectAttempts = 0;
     }
   }
 
@@ -92,14 +164,18 @@ export class WhatsappClient {
       const messageContent =
         msg.message.conversation || msg.message.extendedTextMessage?.text || "";
 
-      if (messageContent.startsWith("/")) {
-        await this.commandHandler.executeCommand(
-          messageContent.trim(),
-          this.socket!,
-          remoteJid,
-        );
-      } else {
-        await this.eventHandler.handleEvent("message", this.socket!, msg);
+      try {
+        if (messageContent.startsWith("/")) {
+          await this.commandHandler.executeCommand(
+            messageContent.trim(),
+            this.socket!,
+            remoteJid,
+          );
+        } else {
+          await this.eventHandler.handleEvent("message", this.socket!, msg);
+        }
+      } catch (error) {
+        this.logger.error(`Erro ao processar mensagem: ${error}`);
       }
     }
   }
