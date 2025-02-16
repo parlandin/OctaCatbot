@@ -1,10 +1,19 @@
-import { BaileysLogger, pinoLogger } from "../shared/utils/BaileysLogger";
+import pino from "pino";
 
 export class Logger {
-  private logger: BaileysLogger;
+  private logger: pino.Logger;
 
   constructor() {
-    this.logger = pinoLogger;
+    this.logger = pino({
+      level: "info",
+      timestamp: false,
+      transport: {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+        },
+      },
+    });
 
     this.info = this.logger.info.bind(this.logger);
     this.error = this.logger.error.bind(this.logger);
