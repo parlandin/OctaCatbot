@@ -12,24 +12,27 @@ export class MessageHandler {
     @inject(Logger) private logger: Logger,
   ) {}
 
-  public async handleMessage(socket: WASocket, msg: WAMessage) {
+  public async handleMessage(socket: WASocket, messages: WAMessage[]) {
     try {
-      const remoteJid = msg.key.remoteJid as string;
-      const messageContent =
-        msg.message?.conversation ||
-        msg.message?.extendedTextMessage?.text ||
-        "";
+      for (const msg of messages) {
+        if (msg.key.fromMe || !msg.message) continue;
+        const remoteJid = msg.key.remoteJid as string;
+        const messageContent =
+          msg.message?.conversation ||
+          msg.message?.extendedTextMessage?.text ||
+          "";
 
-      if (!messageContent) return;
+        if (!messageContent) return;
 
-      if (messageContent.startsWith("/")) {
-        await this.commandHandler.executeCommand(
-          messageContent.trim(),
-          socket,
-          remoteJid,
-        );
-      } else {
-        await this.eventHandler.handleEvent("message", socket, msg);
+        if (messageContent.startsWith("/")) {
+          await this.commandHandler.executeCommand(
+            messageContent.trim(),
+            socket,
+            remoteJid,
+          );
+        } else {
+          await this.eventHandler.handleEvent("message", socket, msg);
+        }
       }
     } catch (error) {
       this.logger.error(`Erro ao processar mensagem:`, error);

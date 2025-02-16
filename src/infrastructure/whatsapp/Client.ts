@@ -10,7 +10,8 @@ import { BaileysStore } from "@infrastructure/whatsapp/BaileysStore.js";
 import { pinoLogger } from "@utils/BaileysLogger.js";
 import { LevelDB } from "@infrastructure/Storage.js";
 import { isDev } from "@utils/isDev.js";
-import { MessageProcessor } from "@infrastructure/whatsapp/MessageProcessor.js";
+import { MessageHandler } from "./handlers/MessageHandler";
+/* import { MessageProcessor } from "@infrastructure/whatsapp/MessageProcessor.js"; */
 
 @injectable()
 export class WhatsappClient {
@@ -23,7 +24,8 @@ export class WhatsappClient {
     @inject(Logger) private logger: Logger,
     @inject(BaileysStore) private baileysStore: BaileysStore,
     @inject(LevelDB) private db: LevelDB,
-    @inject(MessageProcessor) private messageProcessor: MessageProcessor,
+    @inject(MessageHandler) private messageProcessor: MessageHandler,
+    /* @inject(MessageProcessor) private messageProcessor: MessageProcessor, */
   ) {}
 
   public async initialize() {
@@ -54,8 +56,6 @@ export class WhatsappClient {
           }
         },
       });
-
-      this.messageProcessor.initializeQueue(this.socket);
 
       this.baileysStore.bind(this.socket.ev);
 
@@ -158,7 +158,7 @@ export class WhatsappClient {
     messages: WAMessage[];
   }) {
     if (this.socket) {
-      await this.messageProcessor.processMessages(this.socket, messages);
+      await this.messageProcessor.handleMessage(this.socket, messages);
     }
   }
 }
