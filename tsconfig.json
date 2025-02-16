@@ -5,14 +5,12 @@
     "outDir": "dist", 
     "rootDir": "./src",
     "removeComments": true, 
-    "target": "ES2020", 
     "baseUrl": "./", 
-    "moduleResolution": "node", 
     "module": "CommonJS",
-    "paths": {
-  
-    }, 
-  "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "sourceMap": false, 
     "skipLibCheck": true,
     "alwaysStrict": true, 
@@ -24,7 +22,15 @@
     "noUnusedLocals": true, 
     "noUnusedParameters": true, 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@application/*": ["src/application/*"],
+      "@whatsapp/*": ["src/infrastructure/whatsapp/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@utils/*": ["src/shared/utils/*"],
+      "@shared/*": ["src/shared/*"],
+      "@/*": ["src/*"]
+    }, 
   },
   "ts-node": {
     "esm": true, 
