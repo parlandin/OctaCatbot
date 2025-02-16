@@ -1,4 +1,4 @@
-import { BaileysLogger, pinoLogger } from "src/shared/utils/BaileysLogger";
+import { BaileysLogger, pinoLogger } from "../shared/utils/BaileysLogger";
 
 export class Logger {
   private logger: BaileysLogger;

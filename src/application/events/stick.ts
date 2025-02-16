@@ -6,7 +6,7 @@ import {
 import sharp from "sharp";
 import { container } from "tsyringe";
 import { Logger } from "../../infrastructure/Logger";
-import { isDev } from "src/shared/utils/isDev";
+import { isDev } from "../../shared/utils/isDev";
 
 export const event = "message";
 

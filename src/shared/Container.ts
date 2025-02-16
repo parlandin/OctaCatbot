@@ -1,11 +1,11 @@
 import { container } from "tsyringe";
 import { WhatsappClient } from "../infrastructure/whatsapp/Client";
 import { Logger } from "../infrastructure/Logger";
-import { CommandHandler } from "src/infrastructure/whatsapp/handlers/CommandHandler";
-import { EventHandler } from "src/infrastructure/whatsapp/handlers/EventHandler";
+import { CommandHandler } from "../infrastructure/whatsapp/handlers/CommandHandler";
+import { EventHandler } from "../infrastructure/whatsapp/handlers/EventHandler";
 import { BASE_PATH } from "./utils/BasePath";
 import path from "path";
-import { BaileysStore } from "src/infrastructure/whatsapp/BaileysStore";
+import { BaileysStore } from "../infrastructure/whatsapp/BaileysStore";
 
 container.registerSingleton(WhatsappClient, WhatsappClient);
 container.registerSingleton(Logger, Logger);

@@ -8,7 +8,7 @@ import { CommandHandler } from "./handlers/CommandHandler";
 import { EventHandler } from "./handlers/EventHandler";
 import { Logger } from "../Logger";
 import { BaileysStore } from "./BaileysStore";
-import { pinoLogger } from "src/shared/utils/BaileysLogger";
+import { pinoLogger } from "../../shared/utils/BaileysLogger";
 
 @injectable()
 export class WhatsappClient {
