@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+   
+    "lib": [], 
+    "outDir": "dist", 
+    "rootDir": "./src",
+    "removeComments": true, 
+    "target": "ES2020", 
+    "baseUrl": "./", 
+    "moduleResolution": "node", 
+    "module": "CommonJS",
+    "paths": {
+  
+    }, 
+  "esModuleInterop": true,
+    "sourceMap": false, 
+    "skipLibCheck": true,
+    "alwaysStrict": true, 
+    "allowUnreachableCode": false, 
+    "noImplicitAny": true, 
+    "strictNullChecks": true, 
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true, 
+    "noUnusedLocals": true, 
+    "noUnusedParameters": true, 
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "ts-node": {
+    "esm": true, 
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "assets": [
+    "src/assets"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    "static/**/*",
+  ]
+}
