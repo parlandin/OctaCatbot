@@ -18,7 +18,7 @@ export class CommandHandler {
   }
 
   private loadCommands() {
-    const commandsDir = path.join(__dirname, "../../application/commands");
+    const commandsDir = path.join(__dirname, "../../../application/commands");
     const commandFiles = fs
       .readdirSync(commandsDir)
       .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));

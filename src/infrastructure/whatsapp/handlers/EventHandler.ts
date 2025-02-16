@@ -1,20 +1,24 @@
 import { inject, injectable } from "tsyringe";
 import * as fs from "fs";
 import * as path from "path";
-import { WASocket } from "@whiskeysockets/baileys";
-import { Logger } from "../Logger";
+import { WAMessage, WASocket } from "@whiskeysockets/baileys";
+import { Logger } from "../../Logger";
+
+interface Event {
+  event: string;
+  execute: (socket: WASocket, message: WAMessage) => Promise<void>;
+}
 
 @injectable()
 export class EventHandler {
-  private events: Map<string, any> = new Map();
-  
+  private events: Map<string, Event> = new Map();
 
   constructor(@inject(Logger) private logger: Logger) {
     this.loadEvents();
   }
 
   private loadEvents() {
-    const eventsDir = path.join(__dirname, "../../application/events");
+    const eventsDir = path.join(__dirname, "../../../application/events");
     const eventFiles = fs
       .readdirSync(eventsDir)
       .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
@@ -30,9 +34,13 @@ export class EventHandler {
     }
   }
 
-  public async handleEvent(eventName: string, socket: WASocket, message: any) {
+  public async handleEvent(
+    eventName: string,
+    socket: WASocket,
+    message: WAMessage,
+  ) {
     if (this.events.has(eventName)) {
-      await this.events.get(eventName).execute(socket, message);
+      await this.events.get(eventName)?.execute(socket, message);
     }
   }
 }
