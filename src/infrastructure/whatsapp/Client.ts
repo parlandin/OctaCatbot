@@ -11,7 +11,7 @@ import { Logger } from "../Logger";
 import { BaileysStore } from "./BaileysStore";
 import { pinoLogger } from "../../shared/utils/BaileysLogger";
 import { LevelDB } from "../Storage";
-import { isDev } from "src/shared/utils/isDev";
+import { isDev } from "../../shared/utils/isDev";
 
 @injectable()
 export class WhatsappClient {

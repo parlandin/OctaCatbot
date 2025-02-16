@@ -6,8 +6,10 @@ import { EventHandler } from "../infrastructure/whatsapp/handlers/EventHandler";
 import { BASE_PATH } from "./utils/BasePath";
 import path from "path";
 import { BaileysStore } from "../infrastructure/whatsapp/BaileysStore";
+import { LevelDB } from "../infrastructure/Storage";
 
 container.registerSingleton(WhatsappClient, WhatsappClient);
+container.registerSingleton(LevelDB, LevelDB);
 container.registerSingleton(Logger, Logger);
 container.register(CommandHandler, CommandHandler);
 container.register(EventHandler, EventHandler);
