@@ -3,3 +3,4 @@ auth_info
 dist
 src/.local
 .env
+prod
