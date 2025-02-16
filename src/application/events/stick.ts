@@ -31,6 +31,10 @@ export async function execute(socket: WASocket, message: WAMessage) {
       sticker: webpBuffer,
     });
 
+    await socket.sendMessage(message.key.remoteJid, {
+      text: "Sua figurinha está pronta!",
+    });
+
     if (isDev) {
       logger.info("Sticker enviado com sucesso!");
     }
