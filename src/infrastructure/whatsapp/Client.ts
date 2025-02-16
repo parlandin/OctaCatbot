@@ -5,8 +5,6 @@ import makeWASocket, {
   WAMessage,
   proto,
 } from "@whiskeysockets/baileys";
-import { CommandHandler } from "./handlers/CommandHandler";
-import { EventHandler } from "./handlers/EventHandler";
 import { Logger } from "../Logger";
 import { BaileysStore } from "./BaileysStore";
 import { pinoLogger } from "../../shared/utils/BaileysLogger";
@@ -22,8 +20,6 @@ export class WhatsappClient {
   private cleanupInterval?: NodeJS.Timeout;
 
   constructor(
-    @inject(CommandHandler) private commandHandler: CommandHandler,
-    @inject(EventHandler) private eventHandler: EventHandler,
     @inject(Logger) private logger: Logger,
     @inject(BaileysStore) private baileysStore: BaileysStore,
     @inject(LevelDB) private db: LevelDB,
