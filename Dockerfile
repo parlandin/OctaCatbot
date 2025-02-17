@@ -1,6 +1,5 @@
 FROM node:22
 
-
 WORKDIR /app
 
 
@@ -10,17 +9,17 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 
+RUN mkdir -p /app/.yarn/cache
+
+
 COPY package.json yarn.lock ./
 
 
-RUN yarn install --production
+RUN yarn --frozen-lockfile
 
 
 COPY . .
 
-
 RUN yarn build
-
-
 
 CMD ["node", "--env-file=.env", "."]
