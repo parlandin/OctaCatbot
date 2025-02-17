@@ -4,3 +4,5 @@ dist
 src/.local
 .env
 prod
+eng.traineddata
+por.traineddata
