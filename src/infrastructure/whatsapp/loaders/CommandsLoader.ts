@@ -10,7 +10,7 @@ interface Command {
 }
 
 @injectable()
-export class CommandHandler {
+export class CommandLoader {
   private commands: Map<string, Command> = new Map();
 
   constructor(@inject(Logger) private logger: Logger) {

@@ -1,11 +1,11 @@
 import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
-import { EventHandler } from "@whatsapp/handlers/EventHandler.js";
+import { EventLoader } from "@whatsapp/loaders/EventsLoader.js";
 
 @injectable()
 export class StickerHandler extends BaseHandler {
-  constructor(@inject(EventHandler) private eventHandler: EventHandler) {
+  constructor(@inject(EventLoader) private eventHandler: EventLoader) {
     super();
   }
 

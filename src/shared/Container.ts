@@ -1,8 +1,8 @@
 import { container } from "tsyringe";
 import { WhatsappClient } from "@infrastructure/whatsapp/Client.js";
 import { Logger } from "@infrastructure/Logger.js";
-import { CommandHandler } from "@infrastructure/whatsapp/handlers/CommandHandler.js";
-import { EventHandler } from "@infrastructure/whatsapp/handlers/EventHandler.js";
+import { CommandLoader } from "@whatsapp/loaders/CommandsLoader.js";
+import { EventLoader } from "@whatsapp/loaders/EventsLoader.js";
 import { BASE_PATH } from "@utils/BasePath.js";
 import path from "path";
 import { BaileysStore } from "@infrastructure/whatsapp/BaileysStore.js";
@@ -20,15 +20,19 @@ container.registerSingleton(Logger, Logger);
 container.registerSingleton(BaileysStore, BaileysStore);
 /* container.registerSingleton(MessageProcessor, MessageProcessor); */
 
+//loaders
+container.registerSingleton(CommandLoader, CommandLoader);
+container.registerSingleton(EventLoader, EventLoader);
+
 //handlers
 container.register(MessageHandler, MessageHandler);
-container.registerSingleton(CommandHandler, CommandHandler);
-container.registerSingleton(EventHandler, EventHandler);
+
 container.register(SelfMessageHandler, SelfMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(OCRImageHandler, OCRImageHandler);
 container.register(StickerHandler, StickerHandler);
 
+//constants
 container.register("dbPath", {
   useValue: path.resolve(BASE_PATH, ".local"),
 });

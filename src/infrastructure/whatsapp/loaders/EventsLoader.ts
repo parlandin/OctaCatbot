@@ -10,7 +10,7 @@ interface Event {
 }
 
 @injectable()
-export class EventHandler {
+export class EventLoader {
   private events: Map<string, Event> = new Map();
 
   constructor(@inject(Logger) private logger: Logger) {

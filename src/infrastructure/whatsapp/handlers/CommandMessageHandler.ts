@@ -1,11 +1,11 @@
 import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
-import { CommandHandler } from "@whatsapp/handlers/CommandHandler.js";
+import { CommandLoader } from "@whatsapp/loaders/CommandsLoader.js";
 
 @injectable()
 export class CommandMessageHandler extends BaseHandler {
-  constructor(@inject(CommandHandler) private commandHandler: CommandHandler) {
+  constructor(@inject(CommandLoader) private commandHandler: CommandLoader) {
     super();
   }
 
