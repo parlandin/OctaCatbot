@@ -13,6 +13,7 @@ import { SelfMessageHandler } from "@whatsapp/handlers/SelfMessageHandler";
 import { CommandMessageHandler } from "@whatsapp/handlers/CommandMessageHandler";
 import { OCRImageHandler } from "@whatsapp/handlers/OCRImageHandler";
 import { StickerHandler } from "@whatsapp/handlers/StickerHandler";
+import { documentHandler } from "@whatsapp/handlers/DocumentHandler";
 
 container.registerSingleton(WhatsappClient, WhatsappClient);
 container.registerSingleton(LevelDB, LevelDB);
@@ -26,7 +27,7 @@ container.registerSingleton(EventLoader, EventLoader);
 
 //handlers
 container.register(MessageHandler, MessageHandler);
-
+container.register(documentHandler, documentHandler);
 container.register(SelfMessageHandler, SelfMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(OCRImageHandler, OCRImageHandler);

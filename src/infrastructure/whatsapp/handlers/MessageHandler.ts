@@ -7,23 +7,26 @@ import { OCRImageHandler } from "@whatsapp/handlers/OCRImageHandler";
 import { StickerHandler } from "@whatsapp/handlers/StickerHandler";
 import { MessageContext } from "@interfaces/MessageContext";
 import { BaseHandler } from "@whatsapp/handlers/BaseHandler";
+import { documentHandler } from "./DocumentHandler";
 
 @injectable()
 export class MessageHandler {
   private handler: BaseHandler;
 
   constructor(
+    @inject(Logger) private logger: Logger,
     @inject(SelfMessageHandler) selfMessageHandler: SelfMessageHandler,
     @inject(CommandMessageHandler) commandMessageHandler: CommandMessageHandler,
     @inject(OCRImageHandler) ocrImageHandler: OCRImageHandler,
     @inject(StickerHandler) stickerHandler: StickerHandler,
-    @inject(Logger) private logger: Logger,
+    @inject(documentHandler) documentHandler: documentHandler,
   ) {
     this.handler = selfMessageHandler;
     selfMessageHandler
       .setNext(commandMessageHandler)
       .setNext(ocrImageHandler)
-      .setNext(stickerHandler);
+      .setNext(stickerHandler)
+      .setNext(documentHandler);
   }
 
   public async handleMessage(socket: WASocket, messages: WAMessage[]) {
