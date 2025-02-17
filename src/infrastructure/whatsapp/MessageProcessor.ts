@@ -1,4 +1,4 @@
-import { inject, injectable } from "tsyringe";
+/* import { inject, injectable } from "tsyringe";
 import PQueue from "p-queue";
 import { WASocket, WAMessage } from "@whiskeysockets/baileys";
 import { Logger } from "@infrastructure/Logger.js";
@@ -178,3 +178,4 @@ export class MessageProcessor {
     await this.db.setData(this.QUEUE_KEY, "pending", []);
   }
 }
+ */
