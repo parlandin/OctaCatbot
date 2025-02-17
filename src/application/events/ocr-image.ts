@@ -16,7 +16,6 @@ export async function execute(socket: WASocket, message: WAMessage) {
 
   try {
     if (!message.key.remoteJid) return;
-
     if (!message.message?.imageMessage) return;
 
     await reactMessage(socket, message, "⏳");

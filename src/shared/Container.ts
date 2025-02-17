@@ -9,15 +9,25 @@ import { BaileysStore } from "@infrastructure/whatsapp/BaileysStore.js";
 import { LevelDB } from "@infrastructure/Storage.js";
 /* import { MessageProcessor } from "@infrastructure/whatsapp/MessageProcessor.js"; */
 import { MessageHandler } from "@infrastructure/whatsapp/handlers/MessageHandler.js";
+import { SelfMessageHandler } from "@whatsapp/handlers/SelfMessageHandler";
+import { CommandMessageHandler } from "@whatsapp/handlers/CommandMessageHandler";
+import { OCRImageHandler } from "@whatsapp/handlers/OCRImageHandler";
+import { StickerHandler } from "@whatsapp/handlers/StickerHandler";
 
 container.registerSingleton(WhatsappClient, WhatsappClient);
 container.registerSingleton(LevelDB, LevelDB);
 container.registerSingleton(Logger, Logger);
 container.registerSingleton(BaileysStore, BaileysStore);
 /* container.registerSingleton(MessageProcessor, MessageProcessor); */
+
+//handlers
 container.register(MessageHandler, MessageHandler);
-container.register(CommandHandler, CommandHandler);
-container.register(EventHandler, EventHandler);
+container.registerSingleton(CommandHandler, CommandHandler);
+container.registerSingleton(EventHandler, EventHandler);
+container.register(SelfMessageHandler, SelfMessageHandler);
+container.register(CommandMessageHandler, CommandMessageHandler);
+container.register(OCRImageHandler, OCRImageHandler);
+container.register(StickerHandler, StickerHandler);
 
 container.register("dbPath", {
   useValue: path.resolve(BASE_PATH, ".local"),
