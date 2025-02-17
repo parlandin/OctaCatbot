@@ -22,4 +22,4 @@ COPY . .
 
 RUN yarn build
 
-CMD ["node", "--env-file=.env", "."]
+CMD ["node", "."]

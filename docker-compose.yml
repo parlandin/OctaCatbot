@@ -10,7 +10,7 @@ services:
       - yarn_cache:/root/.cache/yarn  
     environment:
       NODE_ENV: "production"
-    command: ["node", "--env-file=.env", "."]
+    command: ["node","."]
     
 volumes:
   app_data: 
