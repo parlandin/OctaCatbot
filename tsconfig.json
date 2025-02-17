@@ -27,6 +27,8 @@
       "@application/*": ["src/application/*"],
       "@whatsapp/*": ["src/infrastructure/whatsapp/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
+      "@interfaces/*": ["src/domain/interfaces/*"],
+      "@domain/*": ["src/domain/*"],
       "@utils/*": ["src/shared/utils/*"],
       "@shared/*": ["src/shared/*"],
       "@/*": ["src/*"]
