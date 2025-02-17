@@ -1,16 +1,17 @@
-version: '3.8'
-
 services:
   app:
+    container_name: marvin-whatsapp-bot
     build:
       context: .
       dockerfile: Dockerfile
+    image: marvin-whats-bot:latest
     volumes:
-      - .:/app
-      - yarn_cache:/root/.cache/yarn
+      - app_data:/app/data  
+      - yarn_cache:/root/.cache/yarn  
     environment:
       NODE_ENV: "production"
     command: ["node", "--env-file=.env", "."]
     
 volumes:
-  yarn_cache:  
+  app_data: 
+  yarn_cache: 
