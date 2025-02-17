@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: marvin-whats-bot:latest
     volumes:
-      - app_data:/app/data  
+      - app_data:/app  
       - yarn_cache:/root/.cache/yarn  
     environment:
       NODE_ENV: "production"
