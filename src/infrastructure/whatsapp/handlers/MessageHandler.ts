@@ -22,6 +22,7 @@ export class MessageHandler {
     @inject(documentHandler) documentHandler: documentHandler,
   ) {
     this.handler = selfMessageHandler;
+
     selfMessageHandler
       .setNext(commandMessageHandler)
       .setNext(ocrImageHandler)
