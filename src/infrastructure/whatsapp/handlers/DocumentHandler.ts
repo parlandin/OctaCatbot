@@ -10,11 +10,11 @@ export class documentHandler extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (context?.message?.message?.documentMessage) {
+    if (context?.data?.message?.documentMessage) {
       await this.eventHandler.handleEvent(
         "document",
         context.socket,
-        context.message,
+        context.data,
       );
       return;
     }

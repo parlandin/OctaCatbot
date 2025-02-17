@@ -35,7 +35,7 @@ export class MessageHandler {
       for (const msg of messages) {
         const context: MessageContext = {
           socket,
-          message: msg,
+          data: msg,
           remoteJid: msg.key.remoteJid as string,
           messageContent:
             msg.message?.conversation ||

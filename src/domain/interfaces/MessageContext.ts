@@ -2,7 +2,7 @@ import { WASocket, WAMessage } from "@whiskeysockets/baileys";
 
 export interface MessageContext {
   socket: WASocket;
-  message: WAMessage;
+  data: WAMessage;
   remoteJid: string;
   messageContent: string;
 }

@@ -5,7 +5,7 @@ import { MessageContext } from "@interfaces/MessageContext";
 @injectable()
 export class SelfMessageHandler extends BaseHandler {
   async handle(context: MessageContext): Promise<void> {
-    if (context.message.key.fromMe || !context.message.message) {
+    if (context.data.key.fromMe || !context.data.message) {
       return;
     }
 

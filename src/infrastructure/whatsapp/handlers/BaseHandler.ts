@@ -8,11 +8,7 @@ export abstract class BaseHandler {
     return handler;
   }
 
-  async handle(context: MessageContext): Promise<void> {
-    if (this.next) {
-      return this.next.handle(context);
-    }
-  }
+  abstract handle(context: MessageContext): Promise<void>;
 
   protected async processNext(context: MessageContext): Promise<void> {
     if (this.next) {

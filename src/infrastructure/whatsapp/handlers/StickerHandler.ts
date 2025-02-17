@@ -10,11 +10,11 @@ export class StickerHandler extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (context?.message?.message?.imageMessage) {
+    if (context?.data?.message?.imageMessage) {
       await this.eventHandler.handleEvent(
         "stick",
         context.socket,
-        context.message,
+        context.data,
       );
     }
 

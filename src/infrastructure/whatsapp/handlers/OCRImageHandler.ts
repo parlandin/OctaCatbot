@@ -11,14 +11,14 @@ export class OCRImageHandler extends BaseHandler {
 
   async handle(context: MessageContext): Promise<void> {
     if (
-      context?.message?.message?.imageMessage &&
-      context?.message?.message?.imageMessage.caption?.toLocaleLowerCase() ===
+      context?.data?.message?.imageMessage &&
+      context?.data?.message?.imageMessage.caption?.toLocaleLowerCase() ===
         "texto"
     ) {
       await this.eventHandler.handleEvent(
         "ocr-image",
         context.socket,
-        context.message,
+        context.data,
       );
       return;
     }
