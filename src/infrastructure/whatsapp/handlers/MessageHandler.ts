@@ -22,8 +22,6 @@ export class MessageHandler {
           msg.message?.extendedTextMessage?.text ||
           "";
 
-        if (!messageContent) return;
-
         if (messageContent.startsWith("/")) {
           await this.commandHandler.executeCommand(
             messageContent.trim(),
@@ -31,7 +29,20 @@ export class MessageHandler {
             remoteJid,
           );
         } else {
-          await this.eventHandler.handleEvent("message", socket, msg);
+          if (
+            msg.message.imageMessage &&
+            msg.message.imageMessage.caption?.toLocaleLowerCase() === "texto"
+          ) {
+            {
+              return await this.eventHandler.handleEvent(
+                "ocr-image",
+                socket,
+                msg,
+              );
+            }
+          }
+
+          await this.eventHandler.handleEvent("stick", socket, msg);
         }
       }
     } catch (error) {

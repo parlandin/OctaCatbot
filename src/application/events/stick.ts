@@ -8,10 +8,11 @@ import { container } from "tsyringe";
 import { Logger } from "@infrastructure/Logger.js";
 import { isDev } from "@utils/isDev.js";
 
-export const event = "message";
+export const event = "stick";
 
 export async function execute(socket: WASocket, message: WAMessage) {
   const logger = container.resolve(Logger);
+
   try {
     if (!message.message?.imageMessage) return;
 
