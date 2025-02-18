@@ -5,59 +5,101 @@ import Tesseract from "tesseract.js";
 import TelegramBot from "node-telegram-bot-api";
 import { streamToBuffer, textToBuffer } from "@utils/BufferUtils";
 import { MessageUtils } from "@utils/MessageUtils";
+import { BaseEvent } from "@interfaces/EventInterface";
 
-export const event = "ocr-image";
+export class EventInstance extends BaseEvent {
+  private readonly logger: Logger;
+  private readonly MAX_TEXT_LENGTH = 600;
 
-export async function execute(
-  socket: TelegramBot,
-  message: TelegramBot.Message,
-) {
-  const logger = container.resolve(Logger);
+  constructor() {
+    super("ocr-image");
+    this.logger = container.resolve(Logger);
+  }
 
-  try {
-    if (!message.photo || message.photo.length <= 0) return;
+  public async execute(
+    socket: TelegramBot,
+    message: TelegramBot.Message,
+  ): Promise<void> {
+    try {
+      if (!this.hasValidPhoto(message)) return;
 
-    const photo = message.photo.at(-1);
-    if (!photo) return;
+      const photo = this.getLastPhoto(message);
+      if (!photo) return;
 
-    const bot = new MessageUtils(socket, message);
+      const bot = new MessageUtils(socket, message);
+      const text = await this.extractTextFromPhoto(socket, photo.file_id);
 
-    const media = socket.getFileStream(photo.file_id);
-    const buffer = await streamToBuffer(media);
-
-    const { data } = await Tesseract.recognize(buffer, "por+eng");
-
-    if (!data.text) {
-      await bot.sendText("Não foi possível extrair texto da imagem!");
-
-      if (isDev) {
-        logger.warn("Não foi possível extrair texto da imagem!");
+      if (!text) {
+        await this.handleNoTextFound(bot);
+        return;
       }
-      return;
-    }
 
-    if (data.text.length <= 600) {
-      const text = "**texto extraído: \n\n**" + "`" + data.text + "`";
-      await bot.sendMarkdown(text);
+      await this.sendExtractedText(bot, text);
+      this.logSuccess();
+    } catch (error) {
+      this.logger.error("Erro ao extrair imagem: ", error);
     }
+  }
 
-    if (data.text.length >= 601) {
-      const text = textToBuffer(data.text);
-      await bot.sendDocument(
-        text,
-        "texto-extraído",
-        {},
-        {
-          filename: "texto-extraído",
-          contentType: "text/plain",
-        },
-      );
-    }
+  private hasValidPhoto(message: TelegramBot.Message): boolean {
+    return Boolean(message.photo && message.photo.length > 0);
+  }
 
+  private getLastPhoto(
+    message: TelegramBot.Message,
+  ): TelegramBot.PhotoSize | undefined {
+    return message.photo?.at(-1);
+  }
+
+  private async extractTextFromPhoto(
+    socket: TelegramBot,
+    fileId: string,
+  ): Promise<string | null> {
+    const media = socket.getFileStream(fileId);
+    const buffer = await streamToBuffer(media);
+    const { data } = await Tesseract.recognize(buffer, "por+eng");
+    return data.text || null;
+  }
+
+  private async handleNoTextFound(bot: MessageUtils): Promise<void> {
+    await bot.sendText("Não foi possível extrair texto da imagem!");
     if (isDev) {
-      logger.info("Texto extraído da imagem com sucesso!");
+      this.logger.warn("Não foi possível extrair texto da imagem!");
     }
-  } catch (error) {
-    logger.error("Erro ao extrair imagem: ", error);
+  }
+
+  private async sendExtractedText(
+    bot: MessageUtils,
+    text: string,
+  ): Promise<void> {
+    if (text.length <= this.MAX_TEXT_LENGTH) {
+      await this.sendShortText(bot, text);
+    } else {
+      await this.sendLongText(bot, text);
+    }
+  }
+
+  private async sendShortText(bot: MessageUtils, text: string): Promise<void> {
+    const formattedText = "**texto extraído: \n\n**" + "`" + text + "`";
+    await bot.sendMarkdown(formattedText);
+  }
+
+  private async sendLongText(bot: MessageUtils, text: string): Promise<void> {
+    const buffer = textToBuffer(text);
+    await bot.sendDocument(
+      buffer,
+      "texto-extraído",
+      {},
+      {
+        filename: "texto-extraído",
+        contentType: "text/plain",
+      },
+    );
+  }
+
+  private logSuccess(): void {
+    if (isDev) {
+      this.logger.info("Texto extraído da imagem com sucesso!");
+    }
   }
 }

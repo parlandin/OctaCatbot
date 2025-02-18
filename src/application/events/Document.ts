@@ -7,66 +7,66 @@ import { Timer } from "@utils/Time";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { BaseEvent } from "@interfaces/EventInterface";
 
-export const event = "document";
+export class EventInstance extends BaseEvent {
+  private readonly logger: Logger;
 
-export async function execute(
-  socket: TelegramBot,
-  message: TelegramBot.Message,
-) {
-  const logger = container.resolve(Logger);
+  constructor() {
+    super("document");
+    this.logger = container.resolve(Logger);
+  }
 
-  try {
-    if (!message.document) return;
+  public async execute(
+    socket: TelegramBot,
+    message: TelegramBot.Message,
+  ): Promise<void> {
+    try {
+      if (!message.document) return;
 
-    const processTime = new Timer().start();
+      const processTime = new Timer().start();
+      const media = socket.getFileStream(message.document.file_id);
+      if (!media) return;
 
-    const media = socket.getFileStream(message.document.file_id);
+      const buffer = await streamToBuffer(media);
+      const images = await fromBuffer(buffer, {
+        preserveAspectRatio: true,
+        quality: 100,
+        density: 150,
+        compression: "JPEG",
+        format: "png",
+      }).bulk(-1, {
+        responseType: "buffer",
+      });
 
-    if (!media) return;
+      const time = processTime.end();
 
-    const buffer = await streamToBuffer(media);
+      if (images.length <= 0) return;
 
-    const images = await fromBuffer(buffer, {
-      preserveAspectRatio: true,
-      quality: 100,
-      density: 150,
-      compression: "JPEG",
-      format: "png",
-    }).bulk(-1, {
-      responseType: "buffer",
-    });
+      const tempDir = os.tmpdir();
+      const list: TelegramBot.InputMediaPhoto[] = images.map((image, index) => {
+        const filePath = path.join(tempDir, `image_${index}.png`);
+        fs.writeFileSync(filePath, image.buffer as Buffer);
+        return {
+          type: "photo",
+          media: filePath,
+          caption: index === 0 ? "Documento convertido" : undefined,
+        };
+      });
 
-    const time = processTime.end();
+      await socket.sendMediaGroup(message.chat.id, list, {
+        reply_to_message_id: message.message_id,
+      });
 
-    if (images.length <= 0) return;
+      await socket.sendMessage(
+        message.chat.id,
+        `Tempo de processamento: ${time}`,
+      );
 
-    const tempDir = os.tmpdir();
-
-    const list: TelegramBot.InputMediaPhoto[] = images.map((image, index) => {
-      const filePath = path.join(tempDir, `image_${index}.png`);
-      fs.writeFileSync(filePath, image.buffer as Buffer);
-
-      return {
-        type: "photo",
-        media: filePath,
-        caption: index === 0 ? "Documento convertido" : undefined,
-      };
-    });
-
-    await socket.sendMediaGroup(message.chat.id, list, {
-      reply_to_message_id: message.message_id,
-    });
-
-    await socket.sendMessage(
-      message.chat.id,
-      `Tempo de processamento: ${time}`,
-    );
-
-    list.forEach((item) => fs.unlinkSync(item.media as string));
-
-    return;
-  } catch (error) {
-    logger.error(" ", error);
+      list.forEach((item) => fs.unlinkSync(item.media as string));
+      return;
+    } catch (error) {
+      this.logger.error(" ", error);
+    }
   }
 }
