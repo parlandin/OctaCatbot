@@ -47,7 +47,7 @@ export class Client {
 
     (await this.commandLoader.getCommands()).forEach((command) => {
       commands.push({
-        command: command.command,
+        command: command.trigger,
         description: command.description,
       });
     });

@@ -4,17 +4,13 @@ import * as path from "path";
 import { Logger } from "@infrastructure/Logger.js";
 import TelegramBot from "node-telegram-bot-api";
 import EventEmitter from "events";
-
-interface Command {
-  command: string;
-  description: string;
-  execute: (socket: TelegramBot, message: TelegramBot.Message) => Promise<void>;
-}
+import { Command, ICommand } from "@interfaces/CommandInterface";
 
 @injectable()
 export class CommandLoader {
-  private commands: Map<string, Command> = new Map();
+  private commands: Map<string, ICommand> = new Map();
   events: EventEmitter<[never]>;
+  private commandsPath: string = "../../../application/commands";
 
   constructor(@inject(Logger) private logger: Logger) {
     this.events = new EventEmitter();
@@ -22,7 +18,7 @@ export class CommandLoader {
   }
 
   private async loadCommands() {
-    const commandsDir = path.join(__dirname, "../../../application/commands");
+    const commandsDir = path.join(__dirname, this.commandsPath);
     const commandFiles = fs
       .readdirSync(commandsDir)
       .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
@@ -31,9 +27,11 @@ export class CommandLoader {
       const commandPath = path.join(commandsDir, file);
       const commandModule = await import(commandPath);
 
-      if (commandModule.command && commandModule.execute) {
-        this.commands.set(commandModule.command, commandModule);
-        this.logger.info(`Comando carregado: ${commandModule.command}`);
+      if (commandModule?.CommandInstance?.prototype instanceof Command) {
+        const CommandClass = commandModule.CommandInstance;
+        const commandInstance = new CommandClass();
+        this.commands.set(commandInstance.trigger, commandInstance);
+        this.logger.info(`Comando carregado: ${commandInstance.trigger}`);
       }
     }
 
@@ -41,26 +39,21 @@ export class CommandLoader {
   }
 
   public async executeCommand(
-    command: string,
+    trigger: string,
     socket: TelegramBot,
     message: TelegramBot.Message,
   ) {
-    if (this.commands.has(command)) {
-      this.logger.info(`Executando comando: ${command}`);
-
-      const commandExecution = this.commands
-        .get(command)
-        ?.execute(socket, message);
-      await (commandExecution ?? Promise.resolve());
+    const commandInstance = this.commands.get(trigger);
+    if (commandInstance) {
+      this.logger.info(`Executando comando: ${trigger}`);
+      await commandInstance.execute(socket, message);
     }
   }
 
-  public async getCommands() {
-    return new Promise<Command[]>((resolve) => {
+  public async getCommands(): Promise<ICommand[]> {
+    return new Promise((resolve) => {
       this.events.on("commandsLoaded", () => {
-        resolve(
-          Array.from(this.commands.entries()).map(([, command]) => command),
-        );
+        resolve(Array.from(this.commands.values()));
       });
     });
   }
