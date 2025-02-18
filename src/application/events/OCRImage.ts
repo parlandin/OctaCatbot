@@ -37,7 +37,8 @@ export async function execute(
     }
 
     if (data.text.length <= 600) {
-      await bot.sendText(data.text);
+      const text = "**texto extraído: \n\n**" + "`" + data.text + "`";
+      await bot.sendMarkdown(text);
     }
 
     if (data.text.length >= 601) {
