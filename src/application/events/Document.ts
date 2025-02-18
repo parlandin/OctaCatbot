@@ -2,7 +2,7 @@ import { container } from "tsyringe";
 import { Logger } from "@infrastructure/Logger.js";
 import { fromBuffer } from "pdf2pic";
 import TelegramBot from "node-telegram-bot-api";
-import { streamToBuffer } from "@utils/streamToBuffer";
+import { streamToBuffer } from "@utils/BufferUtils";
 
 export const event = "document";
 

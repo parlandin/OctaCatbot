@@ -7,3 +7,7 @@ export async function streamToBuffer(stream: Readable): Promise<Buffer> {
   }
   return Buffer.concat(chunks);
 }
+
+export const textToBuffer = (text: string): Buffer => {
+  return Buffer.from(text, "utf-8");
+};

@@ -3,7 +3,7 @@ import { Logger } from "@infrastructure/Logger.js";
 import { isDev } from "@utils/isDev.js";
 import Tesseract from "tesseract.js";
 import TelegramBot from "node-telegram-bot-api";
-import { streamToBuffer } from "@utils/streamToBuffer";
+import { streamToBuffer, textToBuffer } from "@utils/BufferUtils";
 
 export const event = "ocr-image";
 
@@ -36,7 +36,20 @@ export async function execute(
       return;
     }
 
+    //const text = textToBuffer(data.text);
+
     await socket.sendMessage(message.chat.id, data.text);
+    /* await socket.sendDocument(
+      message.chat.id,
+      text,
+      {
+        caption: "Texto extraído da imagem",
+      },
+      {
+        contentType: "text/plain",
+        filename: "texto-extraído",
+      },
+    ); */
 
     if (isDev) {
       logger.info("Texto extraído da imagem com sucesso!");
