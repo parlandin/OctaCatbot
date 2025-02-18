@@ -12,6 +12,7 @@ import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler
 import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
 import { documentHandler } from "@framework/handlers/DocumentHandler";
 
+//framework
 container.registerSingleton(Client, Client);
 container.registerSingleton(LevelDB, LevelDB);
 container.registerSingleton(Logger, Logger);
