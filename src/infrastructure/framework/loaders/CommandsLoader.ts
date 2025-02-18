@@ -3,21 +3,25 @@ import * as fs from "fs";
 import * as path from "path";
 import { Logger } from "@infrastructure/Logger.js";
 import TelegramBot from "node-telegram-bot-api";
+import EventEmitter from "events";
 
 interface Command {
   command: string;
+  description: string;
   execute: (socket: TelegramBot, message: TelegramBot.Message) => Promise<void>;
 }
 
 @injectable()
 export class CommandLoader {
   private commands: Map<string, Command> = new Map();
+  events: EventEmitter<[never]>;
 
   constructor(@inject(Logger) private logger: Logger) {
     this.loadCommands();
+    this.events = new EventEmitter();
   }
 
-  private loadCommands() {
+  private async loadCommands() {
     const commandsDir = path.join(__dirname, "../../../application/commands");
     const commandFiles = fs
       .readdirSync(commandsDir)
@@ -25,13 +29,15 @@ export class CommandLoader {
 
     for (const file of commandFiles) {
       const commandPath = path.join(commandsDir, file);
-      import(commandPath).then((commandModule) => {
-        if (commandModule.command && commandModule.execute) {
-          this.commands.set(commandModule.command, commandModule);
-          this.logger.info(`Comando carregado: ${commandModule.command}`);
-        }
-      });
+      const commandModule = await import(commandPath);
+
+      if (commandModule.command && commandModule.execute) {
+        this.commands.set(commandModule.command, commandModule);
+        this.logger.info(`Comando carregado: ${commandModule.command}`);
+      }
     }
+
+    this.events.emit("commandsLoaded");
   }
 
   public async executeCommand(
@@ -47,5 +53,15 @@ export class CommandLoader {
         ?.execute(socket, message);
       await (commandExecution ?? Promise.resolve());
     }
+  }
+
+  public async getCommands() {
+    return new Promise<Command[]>((resolve) => {
+      this.events.on("commandsLoaded", () => {
+        resolve(
+          Array.from(this.commands.entries()).map(([, command]) => command),
+        );
+      });
+    });
   }
 }

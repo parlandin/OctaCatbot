@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 
 export const command = "/ping";
+export const description = "Verificar se o bot está online";
 
 export async function execute(
   socket: TelegramBot,
