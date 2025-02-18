@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-   
+    "strictPropertyInitialization": true,
     "lib": [], 
     "outDir": "dist", 
     "rootDir": "./src",
