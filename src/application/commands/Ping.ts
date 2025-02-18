@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Command } from "@interfaces/CommandInterface";
+import { MessageUtils } from "@utils/MessageUtils";
 
 export class CommandInstance extends Command {
   public trigger = "/ping";
@@ -9,7 +10,10 @@ export class CommandInstance extends Command {
     socket: TelegramBot,
     message: TelegramBot.Message,
   ): Promise<void> {
-    const id = message.chat.id;
-    await socket.sendMessage(id, "Pong! 🏓");
+    const bot = new MessageUtils(socket, message);
+
+    await bot.sendReaction("🦄");
+
+    await bot.sendText("Pong! 🏓");
   }
 }
