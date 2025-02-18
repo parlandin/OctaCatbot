@@ -14,6 +14,15 @@ export class CommandInstance extends Command {
 
     await bot.sendReaction("🦄");
 
-    await bot.sendText("Pong! 🏓");
+    await this.help(socket, message);
+  }
+
+  public async help(
+    socket: TelegramBot,
+    message: TelegramBot.Message,
+  ): Promise<void> {
+    const bot = new MessageUtils(socket, message);
+
+    await bot.sendText(`🦄 *${this.trigger}* 🦄\n\n${this.description}`);
   }
 }
