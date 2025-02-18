@@ -22,8 +22,8 @@ export class Client {
 
   public async initialize() {
     this.logger.info("Telegram Client initialized");
-    this.handlerMessageEvent();
     this.setCommands();
+    this.handlerMessageEvent();
   }
 
   private async handlerMessageEvent() {
@@ -43,13 +43,15 @@ export class Client {
   }
 
   private async setCommands() {
-    (await this.commandLoader.getCommands()).forEach((data) => {
-      this.socket?.setMyCommands([
-        {
-          command: data.command,
-          description: data.description,
-        },
-      ]);
+    const commands: TelegramBot.BotCommand[] = [];
+
+    (await this.commandLoader.getCommands()).forEach((command) => {
+      commands.push({
+        command: command.command,
+        description: command.description,
+      });
     });
+
+    await this.socket?.setMyCommands(commands);
   }
 }

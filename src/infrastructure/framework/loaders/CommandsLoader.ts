@@ -17,8 +17,8 @@ export class CommandLoader {
   events: EventEmitter<[never]>;
 
   constructor(@inject(Logger) private logger: Logger) {
-    this.loadCommands();
     this.events = new EventEmitter();
+    this.loadCommands();
   }
 
   private async loadCommands() {
