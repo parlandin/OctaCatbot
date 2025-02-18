@@ -38,7 +38,38 @@ export class MessageUtils {
     });
   }
 
-  async sendPhoto(photo: Buffer): Promise<void> {
-    await this.bot.sendPhoto(this.message.chat.id, photo);
+  async sendPhoto(
+    photo: Buffer,
+    caption?: string,
+    filename?: string,
+  ): Promise<void> {
+    await this.bot.sendPhoto(
+      this.message.chat.id,
+      photo,
+      {
+        caption,
+      },
+      {
+        contentType: "image/png",
+        filename,
+      },
+    );
+  }
+
+  async sendDocument(
+    document: Buffer,
+    caption?: string,
+    options?: TelegramBot.SendDocumentOptions,
+    fileOptions?: TelegramBot.FileOptions,
+  ): Promise<void> {
+    await this.bot.sendDocument(
+      this.message.chat.id,
+      document,
+      {
+        caption,
+        ...options,
+      },
+      fileOptions,
+    );
   }
 }

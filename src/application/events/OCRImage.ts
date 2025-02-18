@@ -4,6 +4,7 @@ import { isDev } from "@utils/isDev.js";
 import Tesseract from "tesseract.js";
 import TelegramBot from "node-telegram-bot-api";
 import { streamToBuffer, textToBuffer } from "@utils/BufferUtils";
+import { MessageUtils } from "@utils/MessageUtils";
 
 export const event = "ocr-image";
 
@@ -19,16 +20,15 @@ export async function execute(
     const photo = message.photo.at(-1);
     if (!photo) return;
 
+    const bot = new MessageUtils(socket, message);
+
     const media = socket.getFileStream(photo.file_id);
     const buffer = await streamToBuffer(media);
 
     const { data } = await Tesseract.recognize(buffer, "por+eng");
 
     if (!data.text) {
-      await socket.sendMessage(
-        message.chat.id,
-        "Não foi possível extrair texto da imagem!",
-      );
+      await bot.sendText("Não foi possível extrair texto da imagem!");
 
       if (isDev) {
         logger.warn("Não foi possível extrair texto da imagem!");
@@ -36,20 +36,22 @@ export async function execute(
       return;
     }
 
-    //const text = textToBuffer(data.text);
+    if (data.text.length <= 600) {
+      await bot.sendText(data.text);
+    }
 
-    await socket.sendMessage(message.chat.id, data.text);
-    /* await socket.sendDocument(
-      message.chat.id,
-      text,
-      {
-        caption: "Texto extraído da imagem",
-      },
-      {
-        contentType: "text/plain",
-        filename: "texto-extraído",
-      },
-    ); */
+    if (data.text.length >= 601) {
+      const text = textToBuffer(data.text);
+      await bot.sendDocument(
+        text,
+        "texto-extraído",
+        {},
+        {
+          filename: "texto-extraído",
+          contentType: "text/plain",
+        },
+      );
+    }
 
     if (isDev) {
       logger.info("Texto extraído da imagem com sucesso!");
