@@ -5,7 +5,7 @@ import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler
 import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
 import { MessageContext } from "@interfaces/MessageContext";
 import { BaseHandler } from "@framework/handlers/BaseHandler";
-import { documentHandler } from "./DocumentHandler";
+import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 import TelegramBot from "node-telegram-bot-api";
 
 @injectable()
@@ -17,14 +17,14 @@ export class MessageHandler {
     @inject(BotMessageHandler) selfMessageHandler: BotMessageHandler,
     @inject(CommandMessageHandler) commandMessageHandler: CommandMessageHandler,
     @inject(OCRImageHandler) ocrImageHandler: OCRImageHandler,
-    @inject(documentHandler) documentHandler: documentHandler,
+    @inject(DocumentPDFHandler) documentPDFHandler: DocumentPDFHandler,
   ) {
     this.handler = selfMessageHandler;
 
     selfMessageHandler
       .setNext(commandMessageHandler)
       .setNext(ocrImageHandler)
-      .setNext(documentHandler);
+      .setNext(documentPDFHandler);
   }
 
   public async handleMessage(

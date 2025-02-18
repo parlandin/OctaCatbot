@@ -12,7 +12,7 @@ export class EventInstance extends BaseEvent {
   private readonly MAX_TEXT_LENGTH = 600;
 
   constructor() {
-    super("ocr-image");
+    super("image-to-text");
     this.logger = container.resolve(Logger);
   }
 

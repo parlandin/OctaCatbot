@@ -16,7 +16,7 @@ export class OCRImageHandler extends BaseHandler {
       context?.data?.caption?.toLocaleLowerCase() === "texto"
     ) {
       await this.eventHandler.handleEvent(
-        "ocr-image",
+        "image-to-text",
         context.socket,
         context.data,
       );

@@ -10,7 +10,7 @@ import { MessageHandler } from "@framework/handlers/MessageHandler.js";
 import { BotMessageHandler } from "@framework/handlers/BotMessageHandler";
 import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler";
 import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
-import { documentHandler } from "@framework/handlers/DocumentHandler";
+import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 
 //framework
 container.registerSingleton(Client, Client);
@@ -23,7 +23,7 @@ container.registerSingleton(EventLoader, EventLoader);
 
 //handlers
 container.register(MessageHandler, MessageHandler);
-container.register(documentHandler, documentHandler);
+container.register(DocumentPDFHandler, DocumentPDFHandler);
 container.register(BotMessageHandler, BotMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(OCRImageHandler, OCRImageHandler);

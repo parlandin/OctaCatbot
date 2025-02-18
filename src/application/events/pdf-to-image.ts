@@ -13,7 +13,7 @@ export class EventInstance extends BaseEvent {
   private readonly logger: Logger;
 
   constructor() {
-    super("document");
+    super("pdf-to-image");
     this.logger = container.resolve(Logger);
   }
 
