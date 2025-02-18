@@ -1,39 +1,34 @@
-import {
-  WAMessage,
-  WASocket,
-  downloadMediaMessage,
-} from "@whiskeysockets/baileys";
 import { container } from "tsyringe";
 import { Logger } from "@infrastructure/Logger.js";
 import { isDev } from "@utils/isDev.js";
 import Tesseract from "tesseract.js";
-import { reactMessage, replyMessage } from "@utils/quoteMessage";
+import TelegramBot from "node-telegram-bot-api";
+import { streamToBuffer } from "@utils/streamToBuffer";
 
 export const event = "ocr-image";
 
-export async function execute(socket: WASocket, message: WAMessage) {
+export async function execute(
+  socket: TelegramBot,
+  message: TelegramBot.Message,
+) {
   const logger = container.resolve(Logger);
 
   try {
-    if (!message.key.remoteJid) return;
-    if (!message.message?.imageMessage) return;
+    if (!message.photo || message.photo.length <= 0) return;
 
-    await reactMessage(socket, message, "⏳");
+    const photo = message.photo.at(-1);
+    if (!photo) return;
 
-    const media = await downloadMediaMessage(message, "buffer", {});
-    if (!media) {
-      if (isDev) {
-        logger.warn("Mídia não encontrada!");
-      }
-      return;
-    }
+    const media = socket.getFileStream(photo.file_id);
+    const buffer = await streamToBuffer(media);
 
-    const { data } = await Tesseract.recognize(media, "por+eng");
+    const { data } = await Tesseract.recognize(buffer, "por+eng");
 
     if (!data.text) {
-      await replyMessage(socket, message, {
-        text: "Não foi possível extrair texto da imagem!",
-      });
+      await socket.sendMessage(
+        message.chat.id,
+        "Não foi possível extrair texto da imagem!",
+      );
 
       if (isDev) {
         logger.warn("Não foi possível extrair texto da imagem!");
@@ -41,9 +36,7 @@ export async function execute(socket: WASocket, message: WAMessage) {
       return;
     }
 
-    await replyMessage(socket, message, {
-      text: data.text,
-    });
+    await socket.sendMessage(message.chat.id, data.text);
 
     if (isDev) {
       logger.info("Texto extraído da imagem com sucesso!");

@@ -1,18 +1,22 @@
 import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
-import { EventLoader } from "@whatsapp/loaders/EventsLoader.js";
+import { EventLoader } from "@framework/loaders/EventsLoader.js";
 
 @injectable()
-export class documentHandler extends BaseHandler {
+export class OCRImageHandler extends BaseHandler {
   constructor(@inject(EventLoader) private eventHandler: EventLoader) {
     super();
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (context?.data?.message?.documentMessage) {
+    if (
+      context?.data?.photo &&
+      context.data.photo.length > 0 &&
+      context?.data?.caption?.toLocaleLowerCase() === "texto"
+    ) {
       await this.eventHandler.handleEvent(
-        "document",
+        "ocr-image",
         context.socket,
         context.data,
       );

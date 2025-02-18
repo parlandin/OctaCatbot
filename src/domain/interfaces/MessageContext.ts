@@ -1,8 +1,6 @@
-import { WASocket, WAMessage } from "@whiskeysockets/baileys";
+import TelegramBot from "node-telegram-bot-api";
 
 export interface MessageContext {
-  socket: WASocket;
-  data: WAMessage;
-  remoteJid: string;
-  messageContent: string;
+  socket: TelegramBot;
+  data: TelegramBot.Message;
 }

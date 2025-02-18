@@ -1,12 +1,12 @@
 import { inject, injectable } from "tsyringe";
 import * as fs from "fs";
 import * as path from "path";
-import { WAMessage, WASocket } from "@whiskeysockets/baileys";
 import { Logger } from "@infrastructure/Logger.js";
+import TelegramBot from "node-telegram-bot-api";
 
 interface Event {
   event: string;
-  execute: (socket: WASocket, message: WAMessage) => Promise<void>;
+  execute: (socket: TelegramBot, message: TelegramBot.Message) => Promise<void>;
 }
 
 @injectable()
@@ -36,8 +36,8 @@ export class EventLoader {
 
   public async handleEvent(
     eventName: string,
-    socket: WASocket,
-    message: WAMessage,
+    socket: TelegramBot,
+    message: TelegramBot.Message,
   ) {
     if (this.events.has(eventName)) {
       await this.events.get(eventName)?.execute(socket, message);

@@ -1,7 +1,7 @@
 import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
-import { CommandLoader } from "@whatsapp/loaders/CommandsLoader.js";
+import { CommandLoader } from "@framework/loaders/CommandsLoader.js";
 
 @injectable()
 export class CommandMessageHandler extends BaseHandler {
@@ -10,11 +10,11 @@ export class CommandMessageHandler extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (context.messageContent.startsWith("/")) {
+    if (context.data.text && context.data.text.startsWith("/")) {
       await this.commandHandler.executeCommand(
-        context.messageContent.trim(),
+        context.data.text.trim(),
         context.socket,
-        context.remoteJid,
+        context.data,
       );
       return;
     }

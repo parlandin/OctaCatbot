@@ -1,12 +1,12 @@
 import { inject, injectable } from "tsyringe";
 import * as fs from "fs";
 import * as path from "path";
-import { WASocket } from "@whiskeysockets/baileys";
 import { Logger } from "@infrastructure/Logger.js";
+import TelegramBot from "node-telegram-bot-api";
 
 interface Command {
   command: string;
-  execute: (socket: WASocket, remoteJid: string) => Promise<void>;
+  execute: (socket: TelegramBot, message: TelegramBot.Message) => Promise<void>;
 }
 
 @injectable()
@@ -36,15 +36,15 @@ export class CommandLoader {
 
   public async executeCommand(
     command: string,
-    socket: WASocket,
-    remoteJid: string,
+    socket: TelegramBot,
+    message: TelegramBot.Message,
   ) {
     if (this.commands.has(command)) {
       this.logger.info(`Executando comando: ${command}`);
 
       const commandExecution = this.commands
         .get(command)
-        ?.execute(socket, remoteJid);
+        ?.execute(socket, message);
       await (commandExecution ?? Promise.resolve());
     }
   }

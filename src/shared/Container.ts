@@ -1,25 +1,20 @@
 import { container } from "tsyringe";
-import { WhatsappClient } from "@infrastructure/whatsapp/Client.js";
+import { Client } from "@framework/Client.js";
 import { Logger } from "@infrastructure/Logger.js";
-import { CommandLoader } from "@whatsapp/loaders/CommandsLoader.js";
-import { EventLoader } from "@whatsapp/loaders/EventsLoader.js";
+import { CommandLoader } from "@framework/loaders/CommandsLoader.js";
+import { EventLoader } from "@framework/loaders/EventsLoader.js";
 import { BASE_PATH } from "@utils/BasePath.js";
 import path from "path";
-import { BaileysStore } from "@infrastructure/whatsapp/BaileysStore.js";
 import { LevelDB } from "@infrastructure/Storage.js";
-/* import { MessageProcessor } from "@infrastructure/whatsapp/MessageProcessor.js"; */
-import { MessageHandler } from "@infrastructure/whatsapp/handlers/MessageHandler.js";
-import { SelfMessageHandler } from "@whatsapp/handlers/SelfMessageHandler";
-import { CommandMessageHandler } from "@whatsapp/handlers/CommandMessageHandler";
-import { OCRImageHandler } from "@whatsapp/handlers/OCRImageHandler";
-import { StickerHandler } from "@whatsapp/handlers/StickerHandler";
-import { documentHandler } from "@whatsapp/handlers/DocumentHandler";
+import { MessageHandler } from "@framework/handlers/MessageHandler.js";
+import { BotMessageHandler } from "@framework/handlers/BotMessageHandler";
+import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler";
+import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
+import { documentHandler } from "@framework/handlers/DocumentHandler";
 
-container.registerSingleton(WhatsappClient, WhatsappClient);
+container.registerSingleton(Client, Client);
 container.registerSingleton(LevelDB, LevelDB);
 container.registerSingleton(Logger, Logger);
-container.registerSingleton(BaileysStore, BaileysStore);
-/* container.registerSingleton(MessageProcessor, MessageProcessor); */
 
 //loaders
 container.registerSingleton(CommandLoader, CommandLoader);
@@ -28,10 +23,9 @@ container.registerSingleton(EventLoader, EventLoader);
 //handlers
 container.register(MessageHandler, MessageHandler);
 container.register(documentHandler, documentHandler);
-container.register(SelfMessageHandler, SelfMessageHandler);
+container.register(BotMessageHandler, BotMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(OCRImageHandler, OCRImageHandler);
-container.register(StickerHandler, StickerHandler);
 
 //constants
 container.register("dbPath", {

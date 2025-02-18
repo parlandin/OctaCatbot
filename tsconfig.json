@@ -25,7 +25,7 @@
     "emitDecoratorMetadata": true,
     "paths": {
       "@application/*": ["src/application/*"],
-      "@whatsapp/*": ["src/infrastructure/whatsapp/*"],
+      "@framework/*": ["src/infrastructure/framework/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@interfaces/*": ["src/domain/interfaces/*"],
       "@domain/*": ["src/domain/*"],

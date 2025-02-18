@@ -1,4 +1,4 @@
-import {
+/* import {
   AnyMessageContent,
   MiscMessageGenerationOptions,
   proto,
@@ -39,3 +39,4 @@ export const reactMessage = async (
     },
   );
 };
+ */
