@@ -10,7 +10,7 @@ export class EventInstance extends BaseEvent {
   private readonly logger: Logger;
 
   constructor() {
-    super("cancel-pdf");
+    super("pdf-cancel");
     this.logger = container.resolve(Logger);
   }
 
