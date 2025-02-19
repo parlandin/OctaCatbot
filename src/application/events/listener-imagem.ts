@@ -4,9 +4,9 @@ import TelegramBot from "node-telegram-bot-api";
 import { BaseEvent } from "@interfaces/EventInterface";
 import { LevelDB } from "@infrastructure/Storage";
 
-export interface PDFMessageButton {
+export interface ImageMessageButton {
   messageId: number;
-  document: string;
+  photos: TelegramBot.PhotoSize[];
 }
 
 export class EventInstance extends BaseEvent {
@@ -14,7 +14,7 @@ export class EventInstance extends BaseEvent {
   private storage: LevelDB;
 
   constructor() {
-    super("listener-pdf");
+    super("listener-image");
     this.logger = container.resolve(Logger);
     this.storage = container.resolve(LevelDB);
   }
@@ -24,42 +24,43 @@ export class EventInstance extends BaseEvent {
     message: TelegramBot.Message,
   ): Promise<void> {
     const messageId = message.message_id;
-    const document = message.document?.file_id;
+    const photos = message.photo;
 
-    if (!document || !messageId) return;
+    if (!messageId) return;
+    if (!photos || photos.length <= 0) return;
 
-    await this.storage.setData<PDFMessageButton>(
-      "pdf-document",
+    await this.storage.setData<ImageMessageButton>(
+      "image-file",
       `${messageId}`,
       {
         messageId,
-        document,
+        photos,
       },
     );
 
     await socket.sendMessage(
       message.chat.id,
-      "O que gostaria de fazer com o PDF?",
+      "O que gostaria de fazer com a imagem?",
       {
         reply_to_message_id: messageId,
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: "Converter para imagem",
-                callback_data: `pdf-to-image@${messageId}`,
+                text: "Converter para texto",
+                callback_data: `image-to-text@${messageId}`,
               },
             ],
             [
               {
-                text: "Converter para texto",
-                callback_data: `pdf-to-text@${messageId}`,
+                text: "traduzir e enviar como texto ",
+                callback_data: `image-to-translated-text@${messageId}`,
               },
             ],
             [
               {
                 text: "cancelar",
-                callback_data: `pdf-cancel@${messageId}`,
+                callback_data: `image-cancel@${messageId}`,
               },
             ],
           ],

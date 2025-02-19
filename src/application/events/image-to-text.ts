@@ -6,6 +6,9 @@ import TelegramBot from "node-telegram-bot-api";
 import { streamToBuffer, textToBuffer } from "@utils/BufferUtils";
 import { MessageUtils } from "@utils/MessageUtils";
 import { BaseEvent } from "@interfaces/EventInterface";
+import { isCallbackQuery } from "@utils/MessageTypeGuards";
+import { ImageMessageButton } from "./listener-imagem";
+import { LevelDB } from "@infrastructure/Storage";
 
 export class EventInstance extends BaseEvent {
   private readonly logger: Logger;
@@ -18,15 +21,28 @@ export class EventInstance extends BaseEvent {
 
   public async execute(
     socket: TelegramBot,
-    message: TelegramBot.Message,
+    message: TelegramBot.Message | TelegramBot.CallbackQuery,
+    extraData?: string,
   ): Promise<void> {
     try {
-      if (!this.hasValidPhoto(message)) return;
-
-      const photo = this.getLastPhoto(message);
-      if (!photo) return;
+      if (!isCallbackQuery(message)) return;
+      if (!message.message) return;
+      if (!extraData) return;
 
       const bot = new MessageUtils(socket, message);
+
+      const storage = container.resolve(LevelDB);
+      const data = await storage.getData<ImageMessageButton>(
+        "image-file",
+        extraData,
+      );
+
+      const photos = data?.photos;
+      if (!photos || photos.length <= 0) return;
+
+      const photo = this.getLastPhoto(photos);
+      if (!photo) return;
+
       const text = await this.extractTextFromPhoto(socket, photo.file_id);
 
       if (!text) {
@@ -35,6 +51,14 @@ export class EventInstance extends BaseEvent {
       }
 
       await this.sendExtractedText(bot, text);
+
+      await socket.deleteMessage(
+        message.message.chat.id,
+        message.message.message_id,
+      );
+
+      await storage.delete("image-file", extraData);
+
       this.logSuccess();
     } catch (error) {
       this.logger.error("Erro ao extrair imagem: ", error);
@@ -46,9 +70,9 @@ export class EventInstance extends BaseEvent {
   }
 
   private getLastPhoto(
-    message: TelegramBot.Message,
+    message: TelegramBot.PhotoSize[],
   ): TelegramBot.PhotoSize | undefined {
-    return message.photo?.at(-1);
+    return message.at(-1);
   }
 
   private async extractTextFromPhoto(

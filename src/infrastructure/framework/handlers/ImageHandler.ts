@@ -2,31 +2,26 @@ import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
 import { EventLoader } from "@framework/loaders/EventsLoader.js";
-import { isCallbackQuery } from "@utils/MessageTypeGuards";
+import { isMessage } from "@utils/MessageTypeGuards";
 
 @injectable()
-export class CallbackPDFHandle extends BaseHandler {
+export class ImageHandler extends BaseHandler {
   constructor(@inject(EventLoader) private eventHandler: EventLoader) {
     super();
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (isCallbackQuery(context.data)) {
-      if (!context.data.data) return this.processNext(context);
-
-      const [type, opt] = context.data.data.split("@");
-
-      if (!type || !opt) return this.processNext(context);
-
-      if (!type.includes("pdf")) return this.processNext(context);
+    if (!isMessage(context.data)) {
+      return this.processNext(context);
+    }
+    if (context?.data?.photo && context.data.photo.length > 0) {
+      if (context.data.media_group_id) return this.processNext(context);
 
       await this.eventHandler.handleEvent(
-        `${type}`,
+        "listener-image",
         context.socket,
         context.data,
-        opt,
       );
-
       return;
     }
 

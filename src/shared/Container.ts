@@ -9,9 +9,10 @@ import { LevelDB } from "@infrastructure/Storage.js";
 import { MessageHandler } from "@framework/handlers/MessageHandler.js";
 import { BotMessageHandler } from "@framework/handlers/BotMessageHandler";
 import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler";
-import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
+import { ImageHandler } from "@framework/handlers/ImageHandler";
 import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 import { CallbackPDFHandle } from "@framework/handlers/CallbackPDFHandle";
+import { CallBackImageHandle } from "@framework/handlers/CallBackImageHandle";
 
 //framework
 container.registerSingleton(Client, Client);
@@ -27,8 +28,9 @@ container.register(MessageHandler, MessageHandler);
 container.register(DocumentPDFHandler, DocumentPDFHandler);
 container.register(BotMessageHandler, BotMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
-container.register(OCRImageHandler, OCRImageHandler);
+container.register(ImageHandler, ImageHandler);
 container.register(CallbackPDFHandle, CallbackPDFHandle);
+container.register(CallBackImageHandle, CallBackImageHandle);
 
 //constants
 container.register("dbPath", {
