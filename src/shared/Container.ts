@@ -13,6 +13,7 @@ import { ImageHandler } from "@framework/handlers/ImageHandler";
 import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 import { CallbackPDFHandle } from "@framework/handlers/CallbackPDFHandle";
 import { CallBackImageHandle } from "@framework/handlers/CallBackImageHandle";
+import { RejectionNotCaughtHandle } from "@framework/handlers/RejectionNotCaughtHandle";
 
 //framework
 container.registerSingleton(Client, Client);
@@ -31,6 +32,7 @@ container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(ImageHandler, ImageHandler);
 container.register(CallbackPDFHandle, CallbackPDFHandle);
 container.register(CallBackImageHandle, CallBackImageHandle);
+container.register(RejectionNotCaughtHandle, RejectionNotCaughtHandle);
 
 //constants
 container.register("dbPath", {

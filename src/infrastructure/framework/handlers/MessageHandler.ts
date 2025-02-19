@@ -9,6 +9,7 @@ import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 import TelegramBot from "node-telegram-bot-api";
 import { CallbackPDFHandle } from "./CallbackPDFHandle";
 import { CallBackImageHandle } from "./CallBackImageHandle";
+import { RejectionNotCaughtHandle } from "./RejectionNotCaughtHandle";
 
 @injectable()
 export class MessageHandler {
@@ -22,6 +23,8 @@ export class MessageHandler {
     @inject(DocumentPDFHandler) documentPDFHandler: DocumentPDFHandler,
     @inject(CallbackPDFHandle) callbackPDFHandle: CallbackPDFHandle,
     @inject(CallBackImageHandle) callBackImageHandle: CallBackImageHandle,
+    @inject(RejectionNotCaughtHandle)
+    rejectionNotCaughtHandle: RejectionNotCaughtHandle,
   ) {
     this.handler = selfMessageHandler;
 
@@ -30,7 +33,8 @@ export class MessageHandler {
       .setNext(imageHandler)
       .setNext(documentPDFHandler)
       .setNext(callbackPDFHandle)
-      .setNext(callBackImageHandle);
+      .setNext(callBackImageHandle)
+      .setNext(rejectionNotCaughtHandle);
   }
 
   public async handleMessage(
