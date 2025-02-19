@@ -11,3 +11,5 @@ export async function streamToBuffer(stream: Readable): Promise<Buffer> {
 export const textToBuffer = (text: string): Buffer => {
   return Buffer.from(text, "utf-8");
 };
+
+export const bytesToMB = (bytes: number) => (bytes / (1024 * 1024)).toFixed(2);
