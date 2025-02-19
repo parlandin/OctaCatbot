@@ -23,11 +23,15 @@ export class Client {
   public async initialize() {
     this.logger.info("Telegram Client initialized");
     this.setCommands();
-    this.handlerMessageEvent();
+    this.loadingEvents();
   }
 
-  private async handlerMessageEvent() {
+  private async loadingEvents() {
     this.socket?.on("message", async (msg) => {
+      await this.handleIncomingMessages({ messages: msg });
+    });
+
+    this.socket?.on("callback_query", async (msg) => {
       await this.handleIncomingMessages({ messages: msg });
     });
   }
@@ -35,7 +39,7 @@ export class Client {
   private async handleIncomingMessages({
     messages,
   }: {
-    messages: TelegramBot.Message;
+    messages: TelegramBot.Message | TelegramBot.CallbackQuery;
   }) {
     if (this.socket) {
       await this.messageProcessor.handleMessage(this.socket, messages);

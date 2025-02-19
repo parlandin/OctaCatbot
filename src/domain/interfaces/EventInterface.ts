@@ -5,6 +5,7 @@ export abstract class BaseEvent {
 
   abstract execute(
     socket: TelegramBot,
-    message: TelegramBot.Message,
+    message: TelegramBot.Message | TelegramBot.CallbackQuery,
+    extraData?: string,
   ): Promise<void>;
 }

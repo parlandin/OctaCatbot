@@ -11,6 +11,7 @@ import { BotMessageHandler } from "@framework/handlers/BotMessageHandler";
 import { CommandMessageHandler } from "@framework/handlers/CommandMessageHandler";
 import { OCRImageHandler } from "@framework/handlers/OCRImageHandler";
 import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
+import { CallbackPDFHandle } from "@framework/handlers/CallbackPDFHandle";
 
 //framework
 container.registerSingleton(Client, Client);
@@ -27,6 +28,7 @@ container.register(DocumentPDFHandler, DocumentPDFHandler);
 container.register(BotMessageHandler, BotMessageHandler);
 container.register(CommandMessageHandler, CommandMessageHandler);
 container.register(OCRImageHandler, OCRImageHandler);
+container.register(CallbackPDFHandle, CallbackPDFHandle);
 
 //constants
 container.register("dbPath", {

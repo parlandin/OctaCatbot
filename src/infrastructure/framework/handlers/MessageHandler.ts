@@ -7,6 +7,7 @@ import { MessageContext } from "@interfaces/MessageContext";
 import { BaseHandler } from "@framework/handlers/BaseHandler";
 import { DocumentPDFHandler } from "@framework/handlers/DocumentPDFHandler";
 import TelegramBot from "node-telegram-bot-api";
+import { CallbackPDFHandle } from "./CallbackPDFHandle";
 
 @injectable()
 export class MessageHandler {
@@ -18,18 +19,20 @@ export class MessageHandler {
     @inject(CommandMessageHandler) commandMessageHandler: CommandMessageHandler,
     @inject(OCRImageHandler) ocrImageHandler: OCRImageHandler,
     @inject(DocumentPDFHandler) documentPDFHandler: DocumentPDFHandler,
+    @inject(CallbackPDFHandle) callbackPDFHandle: CallbackPDFHandle,
   ) {
     this.handler = selfMessageHandler;
 
     selfMessageHandler
       .setNext(commandMessageHandler)
       .setNext(ocrImageHandler)
-      .setNext(documentPDFHandler);
+      .setNext(documentPDFHandler)
+      .setNext(callbackPDFHandle);
   }
 
   public async handleMessage(
     socket: TelegramBot,
-    messages: TelegramBot.Message,
+    messages: TelegramBot.Message | TelegramBot.CallbackQuery,
   ) {
     try {
       const context: MessageContext = {

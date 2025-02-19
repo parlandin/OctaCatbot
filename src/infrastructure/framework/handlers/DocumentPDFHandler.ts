@@ -2,6 +2,7 @@ import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
 import { EventLoader } from "@framework/loaders/EventsLoader.js";
+import { isMessage } from "@utils/MessageTypeGuards";
 
 @injectable()
 export class DocumentPDFHandler extends BaseHandler {
@@ -10,17 +11,17 @@ export class DocumentPDFHandler extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
-    if (context?.data?.document?.mime_type === "application/pdf") {
-      if (!context.data.caption) return;
+    if (!isMessage(context.data)) {
+      return this.processNext(context);
+    }
 
-      if (context.data.caption.toLocaleLowerCase() === "imagem") {
-        await this.eventHandler.handleEvent(
-          "pdf-to-image",
-          context.socket,
-          context.data,
-        );
-        return;
-      }
+    if (context?.data?.document?.mime_type === "application/pdf") {
+      await this.eventHandler.handleEvent(
+        "listener-pdf",
+        context.socket,
+        context.data,
+      );
+      return;
     }
 
     return this.processNext(context);

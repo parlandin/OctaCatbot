@@ -36,12 +36,13 @@ export class EventLoader {
   public async handleEvent(
     eventName: string,
     socket: TelegramBot,
-    message: TelegramBot.Message,
+    message: TelegramBot.Message | TelegramBot.CallbackQuery,
+    extraData?: string,
   ) {
     const eventInstance = this.events.get(eventName);
     if (eventInstance) {
       this.logger.info(`Executando evento: ${eventName}`);
-      await eventInstance.execute(socket, message);
+      await eventInstance.execute(socket, message, extraData);
     }
   }
 }

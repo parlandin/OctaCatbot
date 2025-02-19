@@ -2,6 +2,7 @@ import { injectable, inject } from "tsyringe";
 import { BaseHandler } from "./BaseHandler";
 import { MessageContext } from "@interfaces/MessageContext";
 import { EventLoader } from "@framework/loaders/EventsLoader.js";
+import { isMessage } from "@utils/MessageTypeGuards";
 
 @injectable()
 export class OCRImageHandler extends BaseHandler {
@@ -10,6 +11,9 @@ export class OCRImageHandler extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
+    if (!isMessage(context.data)) {
+      return this.processNext(context);
+    }
     if (
       context?.data?.photo &&
       context.data.photo.length > 0 &&

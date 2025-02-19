@@ -8,6 +8,9 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { BaseEvent } from "@interfaces/EventInterface";
+import { isCallbackQuery } from "@utils/MessageTypeGuards";
+import { LevelDB } from "@infrastructure/Storage";
+import { PDFMessageButton } from "./listener-pdf";
 
 export class EventInstance extends BaseEvent {
   private readonly logger: Logger;
@@ -19,13 +22,26 @@ export class EventInstance extends BaseEvent {
 
   public async execute(
     socket: TelegramBot,
-    message: TelegramBot.Message,
+    message: TelegramBot.Message | TelegramBot.CallbackQuery,
+    extraData?: string,
   ): Promise<void> {
     try {
-      if (!message.document) return;
+      if (!isCallbackQuery(message)) return;
+
+      if (!message.message) return;
+      if (!extraData) return;
+
+      const storage = container.resolve(LevelDB);
+      const data = await storage.getData<PDFMessageButton>(
+        "pdf-document",
+        extraData,
+      );
+
+      const document = data?.document;
+      if (!document) return;
 
       const processTime = new Timer().start();
-      const media = socket.getFileStream(message.document.file_id);
+      const media = socket.getFileStream(document);
       if (!media) return;
 
       const buffer = await streamToBuffer(media);
@@ -54,12 +70,17 @@ export class EventInstance extends BaseEvent {
         };
       });
 
-      await socket.sendMediaGroup(message.chat.id, list, {
-        reply_to_message_id: message.message_id,
-      });
+      await socket.sendMediaGroup(message.message.chat.id, list);
+
+      await socket.deleteMessage(
+        message.message.chat.id,
+        message.message.message_id,
+      );
+
+      await storage.delete("pdf-document", extraData);
 
       await socket.sendMessage(
-        message.chat.id,
+        message.message.chat.id,
         `Tempo de processamento: ${time}`,
       );
 
