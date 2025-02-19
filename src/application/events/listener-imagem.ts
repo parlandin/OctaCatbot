@@ -3,6 +3,7 @@ import { Logger } from "@infrastructure/Logger.js";
 import TelegramBot from "node-telegram-bot-api";
 import { BaseEvent } from "@interfaces/EventInterface";
 import { LevelDB } from "@infrastructure/Storage";
+import { isDev } from "@utils/isDev";
 
 export interface ImageMessageButton {
   messageId: number;
@@ -37,6 +38,10 @@ export class EventInstance extends BaseEvent {
         photos,
       },
     );
+
+    if (isDev) {
+      this.logger.info(`Imagem salva com sucesso: ${messageId}`);
+    }
 
     await socket.sendMessage(
       message.chat.id,

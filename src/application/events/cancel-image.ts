@@ -5,6 +5,7 @@ import { BaseEvent } from "@interfaces/EventInterface";
 import { isCallbackQuery } from "@utils/MessageTypeGuards";
 import { LevelDB } from "@infrastructure/Storage";
 import { ImageMessageButton } from "./listener-imagem";
+import { isDev } from "@utils/isDev";
 
 export class EventInstance extends BaseEvent {
   private readonly logger: Logger;
@@ -31,6 +32,9 @@ export class EventInstance extends BaseEvent {
 
       if (!data) {
         socket.sendMessage(message.message.chat.id, "Cancelado");
+        if (isDev) {
+          this.logger.info("Cancelado por não ter dados no storage");
+        }
         return;
       }
 

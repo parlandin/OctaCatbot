@@ -3,6 +3,7 @@ import { Logger } from "@infrastructure/Logger.js";
 import TelegramBot from "node-telegram-bot-api";
 import { BaseEvent } from "@interfaces/EventInterface";
 import { LevelDB } from "@infrastructure/Storage";
+import { isDev } from "@utils/isDev";
 
 export interface PDFMessageButton {
   messageId: number;
@@ -36,6 +37,10 @@ export class EventInstance extends BaseEvent {
         document,
       },
     );
+
+    if (isDev) {
+      this.logger.info(`PDF salvo com sucesso: ${messageId}`);
+    }
 
     await socket.sendMessage(
       message.chat.id,
