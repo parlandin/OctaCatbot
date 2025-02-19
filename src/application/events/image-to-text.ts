@@ -65,10 +65,6 @@ export class EventInstance extends BaseEvent {
     }
   }
 
-  private hasValidPhoto(message: TelegramBot.Message): boolean {
-    return Boolean(message.photo && message.photo.length > 0);
-  }
-
   private getLastPhoto(
     message: TelegramBot.PhotoSize[],
   ): TelegramBot.PhotoSize | undefined {
