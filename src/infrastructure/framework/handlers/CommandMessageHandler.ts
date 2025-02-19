@@ -17,7 +17,7 @@ export class CommandMessageHandler extends BaseHandler {
 
     if (context.data.text && context.data.text.startsWith("/")) {
       await this.commandHandler.executeCommand(
-        context.data.text.trim(),
+        context.data?.text.trim().split(" ")[0] as string,
         context.socket,
         context.data,
       );
