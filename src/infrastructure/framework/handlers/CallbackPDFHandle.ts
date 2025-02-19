@@ -18,16 +18,14 @@ export class CallbackPDFHandle extends BaseHandler {
 
       if (!type || !opt) return this.processNext(context);
 
-      if (type === "to-image") {
-        await this.eventHandler.handleEvent(
-          `pdf-${type}`,
-          context.socket,
-          context.data,
-          opt,
-        );
+      await this.eventHandler.handleEvent(
+        `pdf-${type}`,
+        context.socket,
+        context.data,
+        opt,
+      );
 
-        return;
-      }
+      return;
     }
 
     return this.processNext(context);

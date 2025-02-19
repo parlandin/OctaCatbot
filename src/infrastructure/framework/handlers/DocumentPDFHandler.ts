@@ -16,6 +16,7 @@ export class DocumentPDFHandler extends BaseHandler {
     }
 
     if (context?.data?.document?.mime_type === "application/pdf") {
+      console.log("PDF RECEIVED", context.data.document);
       await this.eventHandler.handleEvent(
         "listener-pdf",
         context.socket,
