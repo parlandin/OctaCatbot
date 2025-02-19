@@ -58,7 +58,7 @@ export class EventInstance extends BaseEvent {
             [
               {
                 text: "cancelar",
-                callback_data: `to-pdf@cancel`,
+                callback_data: `cancel@${messageId}`,
               },
             ],
           ],

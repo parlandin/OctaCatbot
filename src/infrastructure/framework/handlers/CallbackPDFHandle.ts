@@ -11,7 +11,6 @@ export class CallbackPDFHandle extends BaseHandler {
   }
 
   async handle(context: MessageContext): Promise<void> {
-    console.log("CallbackPDFHandle", context.data);
     if (isCallbackQuery(context.data)) {
       if (!context.data.data) return this.processNext(context);
 
@@ -30,7 +29,15 @@ export class CallbackPDFHandle extends BaseHandler {
         return;
       }
 
-      return this.processNext(context);
+      if (type == "cancel") {
+        await this.eventHandler.handleEvent(
+          "cancel-pdf",
+          context.socket,
+          context.data,
+          opt,
+        );
+        return;
+      }
     }
 
     return this.processNext(context);
