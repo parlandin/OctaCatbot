@@ -1,16 +1,18 @@
 services:
   app:
-    container_name: marvin-whatsapp-bot
+    container_name: OctaCatbot-bot
     build:
       context: .
       dockerfile: Dockerfile
-    image: marvin-whats-bot:latest
+    image: OctaCatbot:latest
     volumes:
       - app_data:/app  
       - yarn_cache:/root/.cache/yarn  
     environment:
       NODE_ENV: "production"
-    command: ["node","."]
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+
+    command: ["node", "."]
     
 volumes:
   app_data: 
