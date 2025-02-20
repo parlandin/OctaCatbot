@@ -29,6 +29,11 @@ export class TranslateMessageHandle extends BaseHandler {
 
     if (haPendentTranslation) {
       await this.store.delete("pending-translation", chatId.toString());
+
+      if (context.data?.text && context.data?.text?.length > 600) {
+        return this.processNext(context);
+      }
+
       await this.eventHandler.handleEvent(
         "translate-text",
         context.socket,
