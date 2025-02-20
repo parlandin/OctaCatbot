@@ -7,10 +7,14 @@ services:
     image: OctaCatbot:latest
     volumes:
       - app_data:/app  
-      - yarn_cache:/root/.cache/yarn  
+      - yarn_cache:/root/.cache/yarn
+    env_file:
+    - .env
     environment:
       NODE_ENV: "production"
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      GOOGLE_TRANSLATE_API_KEY:  ${GOOGLE_TRANSLATE_API_KEY}
+      GOOGLE_TRANSLATE_API_URL: ${GOOGLE_TRANSLATE_API_URL}
 
     command: ["node", "."]
     
