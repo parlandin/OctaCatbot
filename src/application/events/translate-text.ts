@@ -4,6 +4,7 @@ import TelegramBot from "node-telegram-bot-api";
 import { BaseEvent } from "@interfaces/EventInterface";
 import { isMessage } from "@utils/MessageTypeGuards";
 import { TranslateClient } from "@infrastructure/TranslateClient";
+import { isDev } from "@utils/isDev";
 /* import { LevelDB } from "@infrastructure/Storage";
 import { isDev } from "@utils/isDev"; */
 
@@ -27,6 +28,10 @@ export class EventInstance extends BaseEvent {
     const translated = await container
       .resolve(TranslateClient)
       .translate(messageText, "pt");
+
+    if (isDev) {
+      this.logger.info(`Mensagem traduzida: ${translated}`);
+    }
 
     const formattedText =
       "**Mensagem traduzida: \n\n**" + "`" + translated + "`";

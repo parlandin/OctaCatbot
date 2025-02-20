@@ -34,8 +34,6 @@ export class TranslateClient {
 
     const data = (await response.json()) as TranslateResponse;
 
-    console.log(data);
-
     if (!data.data.translations.length)
       return "Não foi possível traduzir a mensagem";
 
